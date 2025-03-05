@@ -75,5 +75,8 @@ jobs:
             dhcp-match=set:efi-x86_64,option:client-arch,7
           EOF
           cat ${WORKDIR}/dnsmasq.conf
+          sudo dnsmasq -C ${WORKDIR}/dnsmasq.conf
+          sudo apt install procps
+          sudo ps -ef
 
 
