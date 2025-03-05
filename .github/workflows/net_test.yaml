@@ -32,7 +32,7 @@ jobs:
           # Create bridge
           ip link add ${BRIDGE} type bridge
           ip link set dev ${BRIDGE} up
-          ip addr add dev ${BRIDGE} 10.10.10.1/255.255.255.0
+          ip addr add dev ${BRIDGE} ${GATEWAY}/${NETMASK}
 
           # Enable forwarding
           sysctl -w net.ipv4.ip_forward=1 > /dev/null 2>&1
@@ -76,7 +76,6 @@ jobs:
           EOF
           cat ${WORKDIR}/dnsmasq.conf
           sudo dnsmasq -C ${WORKDIR}/dnsmasq.conf
-          sudo apt install procps
-          sudo ps -ef
+
 
 
