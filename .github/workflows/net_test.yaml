@@ -1,4 +1,4 @@
-name: Build
+name: Network Boot Test
 
 on:
   push:
@@ -8,36 +8,72 @@ on:
     types: [published]
 
 env:
-  PROJECT_TYPE: UEFI
-  FORCE_INSTALL: 1
-  HAS_OPENSSL_BUILD: 1
-  HAS_OPENSSL_W32BUILD: 0
-  WERROR: 1
+  BRIDGE: br0
+  TAP: tap0
+  NETWORK: "10.10.10.0"
+  NETMASK: "255.255.255.0"
+  GATEWAY: "10.10.10.1"
+  DHCPRANGE: "10.10.10.10,10.10.10.20"
+  QEMU_HWADDR: "52:54:00:12:34:56"
+  WORKDIR: "/test_netboot"
+  HTTP_PORT: 1337
 
 jobs:
   test:
     runs-on: ubuntu-24.04
 
     steps:
-      - name: Set up networking
+      - name: Setup networking
         run: |
           sudo -s <<END
           apt-get update
-          apt-get install -qq -y dnsmasq-base iproute2 net-tools
+          apt-get install -qq -y dnsmasq-base iproute2
 
           # Create bridge
-          ip link add br0 type bridge
-          ip link set dev br0 up
-          ip addr add dev br0 10.10.10.1/255.255.255.0
+          ip link add ${BRIDGE} type bridge
+          ip link set dev ${BRIDGE} up
+          ip addr add dev ${BRIDGE} 10.10.10.1/255.255.255.0
 
           # Enable forwarding
           sysctl -w net.ipv4.ip_forward=1 > /dev/null 2>&1
 
           # Create TAP interafce
-          ip tuntap add name tap0 mode tap
-          ip link set tap0 master br0
-          ip link set dev tap0 up
+          ip tuntap add name ${TAP} mode tap
+          ip link set ${TAP} master ${BRIDGE}
+          ip link set dev ${TAP} up
+
+          # Print interfaces
+          ip addr
+
+          # Create workdir
+          mkdir -p ${WORKDIR}
+          # Create TFTP, HTTP server folders
+          mkdir -p ${WORKDIR}/http_server
+          mkdir -p ${WORKDIR}/tftp_server
+          chmod -R 755 ${WORKDIR}
           END
 
-      - name: Check networking
-        run: sudo ifconfig
+      - name: Configure dnsmasq
+        run: |
+          sudo sh -c "cat >>${WORKDIR}/dnsmasq.conf" <<-EOF
+            # Disable DNS Server
+            port=0
+            interface=${BRIDGE}
+            # Range of adresses allocated by DHCP server
+            dhcp-range=${DHCPRANGE}
+            # Trigger PXE Boot support on HTTP Boot client request
+            dhcp-pxe-vendor=PXEClient,HTTPClient:Arch:00016
+            # Set triggering tag if correct arch is present in option 60
+            dhcp-match=set:arch_x64,option:client-arch,16
+            # Make PXE Boot support believe it has something to send...
+            pxe-service=tag:arch_x64,x86-64_EFI,"Network Boot"
+            # Specify bootfile-name via PXE Boot setting
+            dhcp-boot=tag:arch_x64,http://${GATEWAY}:${HTTP_PORT}/EFI/BOOT/BOOTX64.efi
+            dhcp-boot=tag:efi-x86_64,"EFI/BOOT/BOOTX64.efi"
+            enable-tftp
+            tftp-root=${WORKDIR}/tftp_server
+            dhcp-match=set:efi-x86_64,option:client-arch,7
+          EOF
+          cat ${WORKDIR}/dnsmasq.conf
+
+
