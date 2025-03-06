@@ -97,6 +97,11 @@
   INF  MdeModulePkg/Universal/Disk/UnicodeCollation/EnglishDxe/EnglishDxe.inf
   INF  OpenCorePkg/Platform/OpenPartitionDxe/PartitionDxe.inf
 
+  # QEMU Virtio devices support
+  #INF  OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
+  #INF  OvmfPkg/Virtio10Dxe/Virtio10.inf
+  #INF  OvmfPkg/VirtioSerialDxe/VirtioSerial.inf
+
   # ACPI and SMBIOS (convenience protocols are optional)
   # INF  OpenCorePkg/Legacy/BootPlatform/SmbiosGenDxe/SmbiosGen.inf
   # INF  MdeModulePkg/Universal/SmbiosDxe/SmbiosDxe.inf

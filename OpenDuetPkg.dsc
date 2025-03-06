@@ -51,6 +51,8 @@
   LzmaDecompressLib|MdeModulePkg/Library/LzmaCustomDecompressLib/LzmaCustomDecompressLib.inf
   PciCf8Lib|MdePkg/Library/BasePciCf8Lib/BasePciCf8Lib.inf
   PciLib|MdePkg/Library/BasePciLibCf8/BasePciLibCf8.inf
+  PciCapLib|OvmfPkg/Library/BasePciCapLib/BasePciCapLib.inf
+  PciCapPciIoLib|OvmfPkg/Library/UefiPciCapPciIoLib/UefiPciCapPciIoLib.inf
   PrintLib|MdePkg/Library/BasePrintLib/BasePrintLib.inf
   SynchronizationLib|MdePkg/Library/BaseSynchronizationLib/BaseSynchronizationLib.inf
   #
@@ -111,6 +113,7 @@
   OcMemoryLib|OpenCorePkg/Library/OcMemoryLib/OcMemoryLib.inf
   OcMiscLib|OpenCorePkg/Library/OcMiscLib/OcMiscLib.inf
   OcStringLib|OpenCorePkg/Library/OcStringLib/OcStringLib.inf
+  OrderedCollectionLib|MdePkg/Library/BaseOrderedCollectionRedBlackTreeLib/BaseOrderedCollectionRedBlackTreeLib.inf
   #
   # To save size, use NULL library for DebugLib and ReportStatusCodeLib.
   # If need status code output, do library instance override.
@@ -125,6 +128,7 @@
 !endif
   DebugPrintErrorLevelLib|MdePkg/Library/BaseDebugPrintErrorLevelLib/BaseDebugPrintErrorLevelLib.inf
   ReportStatusCodeLib|MdePkg/Library/BaseReportStatusCodeLibNull/BaseReportStatusCodeLibNull.inf
+  VirtioLib|OvmfPkg/Library/VirtioLib/VirtioLib.inf
 
 [LibraryClasses.common.DXE_CORE]
   HobLib|MdePkg/Library/DxeCoreHobLib/DxeCoreHobLib.inf
@@ -244,6 +248,17 @@
   # Bios Thunk
   OpenCorePkg/Legacy/BootPlatform/LegacyRegion2Dxe/LegacyRegion2Dxe.inf
   OpenCorePkg/Legacy/BootPlatform/BiosVideo/BiosVideo.inf
+
+  # QEMU Virtio devices support
+  OvmfPkg/VirtioPciDeviceDxe/VirtioPciDeviceDxe.inf
+  OvmfPkg/Virtio10Dxe/Virtio10.inf
+  OvmfPkg/VirtioBlkDxe/VirtioBlk.inf
+  OvmfPkg/VirtioScsiDxe/VirtioScsi.inf
+  OvmfPkg/VirtioSerialDxe/VirtioSerial.inf
+  #OvmfPkg/QemuVideoDxe/QemuVideoDxe.inf
+  #OvmfPkg/VirtioFsDxe/VirtioFsDxe.inf
+  #OvmfPkg/VirtioGpuDxe/VirtioGpu.inf
+  OvmfPkg/VirtioNetDxe/VirtioNet.inf
 
 [LibraryClasses]
   NULL|MdePkg/Library/IntrinsicLib/IntrinsicLib.inf
